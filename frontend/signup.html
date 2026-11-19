@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up - Sport Management System</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+  <div class="auth-wrapper">
+    <div class="auth-card">
+      <div class="auth-header">
+        <h1>Wayamba Sports</h1>
+        <p>Create your university sports account</p>
+      </div>
+
+      <div id="alertBox" class="alert" style="display: none;"></div>
+
+      <form id="signupForm" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="role">Role</label>
+          <select id="role" class="form-select" required>
+            <option value="STUDENT">Student</option>
+            <option value="LECTURER">Lecturer</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="userId">Student ID / Lecturer ID</label>
+          <input type="text" id="userId" class="form-control" placeholder="e.g. 242203 or L001" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="faculty">Faculty</label>
+          <select id="faculty" class="form-select" required>
+            <option value="TECHNOLOGY">Technology</option>
+            <option value="APPLIED_SCIENCES">Applied Sciences</option>
+            <option value="BUSINESS_STUDIES">Business Studies</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="password">Enter a Password</label>
+          <input type="password" id="password" class="form-control" placeholder="••••••••" required>
+          <span class="form-hint">Minimum 8 characters including capital and simple letters, number and symbol.</span>
+          <span id="passwordFeedback" class="form-error"></span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="confirmPassword">Confirm Password</label>
+          <input type="password" id="confirmPassword" class="form-control" placeholder="••••••••" required>
+          <span id="confirmFeedback" class="form-error"></span>
+        </div>
+
+        <button type="submit" id="submitBtn" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;">Sign Up</button>
+      </form>
+
+      <div class="auth-footer">
+        Already have an account? <a href="login.html">Log In</a>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="js/auth.js"></script>
+</body>
+</html>
+

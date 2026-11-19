@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Wayamba Sports</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+  <!-- Navigation Top Bar -->
+  <header class="navbar">
+    <div class="nav-brand">
+      <span>🏟️ Wayamba Sports</span>
+    </div>
+
+    <div class="nav-controls">
+      <!-- Indoor / Outdoor Segmented Control at top-right -->
+      <div class="type-toggle">
+        <button id="indoorBtn" class="type-btn active">Indoor</button>
+        <button id="outdoorBtn" class="type-btn">Outdoor</button>
+      </div>
+
+      <span id="welcomeUser" style="font-size: 0.9rem; font-weight: 600; color: var(--text-muted);"></span>
+      <button id="logoutTrigger" class="btn btn-sm btn-outline">Logout</button>
+    </div>
+  </header>
+
+  <!-- Main Content Layout -->
+  <main class="dashboard-container">
+    <!-- Left Sidebar: Sports Selection -->
+    <aside>
+      <div class="card">
+        <h3 style="font-size: 1.1rem; color: var(--primary);">Select Sport</h3>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem;">Choose a sport to see time slots</p>
+        <div id="sportsList" class="sports-list">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </aside>
+
+    <!-- Right Content: Tabs & Views -->
+    <section>
+      <div class="panel-tab">
+        <button id="bookingTab" class="tab-btn active">Reserve Slot</button>
+        <button id="myBookingsTab" class="tab-btn">My Bookings</button>
+        <button id="notificationsTab" class="tab-btn">Notifications</button>
+        <button id="profileTab" class="tab-btn">Profile</button>
+      </div>
+
+      <!-- 1. Booking View -->
+      <div id="bookingView" class="booking-section">
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;">
+            <div>
+              <h2 id="selectedSportTitle" style="font-size: 1.3rem; color: var(--primary);">Select a Sport</h2>
+              <p style="font-size: 0.85rem; color: var(--text-muted);">Slots available between 07:00 AM – 07:00 PM (1-hour slots)</p>
+            </div>
+            <div>
+              <label for="datePicker" class="form-label" style="margin-bottom: 0.25rem;">Date:</label>
+              <input type="date" id="datePicker" class="form-control" style="width: auto;">
+            </div>
+          </div>
+
+          <div id="bookingAlert" class="alert" style="display: none;"></div>
+
+          <div id="slotsContainer" class="slot-grid">
+            <!-- Slots rendered here -->
+          </div>
+
+          <div style="margin-top: 1.5rem; display: flex; justify-content: flex-end;">
+            <button id="bookBtn" class="btn btn-primary" disabled>Request Booking</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. My Bookings View -->
+      <div id="myBookingsView" style="display: none;">
+        <div class="card">
+          <h3 style="color: var(--primary); margin-bottom: 0.5rem;">My Bookings History</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">View status or cancel pending/approved bookings</p>
+          <div class="data-table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Sport</th>
+                  <th>Facility</th>
+                  <th>Date</th>
+                  <th>Time Slot</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="myBookingsTableBody">
+                <!-- Bookings populated here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Notifications View -->
+      <div id="notificationsView" style="display: none;">
+        <div class="card">
+          <h3 style="color: var(--primary); margin-bottom: 1rem;">Notifications</h3>
+          <div id="notificationsList">
+            <!-- Notifications populated here -->
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. Profile View -->
+      <div id="profileView" style="display: none;">
+        <div id="profileContainer">
+          <!-- Profile details populated here -->
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Logout Confirmation Modal (OK / Cancel) -->
+  <div id="logoutModal" class="modal-overlay">
+    <div class="modal-content">
+      <h3 style="margin-bottom: 0.75rem; color: var(--text-main);">Confirm Logout</h3>
+      <p style="color: var(--text-muted); font-size: 0.95rem;">Are you sure you want to end your session?</p>
+      <div class="modal-actions">
+        <button id="cancelLogoutBtn" class="btn btn-outline">Cancel</button>
+        <button id="confirmLogoutBtn" class="btn btn-primary">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="js/dashboard.js"></script>
+</body>
+</html>
+

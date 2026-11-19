@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - Wayamba Sports</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+  <!-- Admin Navigation Top Bar -->
+  <header class="navbar">
+    <div class="nav-brand">
+      <span>🛡️ Wayamba Sports - Admin Portal</span>
+    </div>
+
+    <div class="nav-controls">
+      <span id="adminWelcome" style="font-size: 0.9rem; font-weight: 600; color: var(--text-muted);"></span>
+      <button id="logoutTrigger" class="btn btn-sm btn-outline">Logout</button>
+    </div>
+  </header>
+
+  <main style="max-width: 1100px; margin: 2rem auto; padding: 0 1rem; width: 100%;">
+    <div class="panel-tab" style="margin-bottom: 1.5rem;">
+      <button id="tabBookings" class="tab-btn admin-tab-btn active">Pending & All Bookings</button>
+      <button id="tabUsers" class="tab-btn admin-tab-btn">Registered Users</button>
+    </div>
+
+    <div id="adminAlert" class="alert" style="display: none;"></div>
+
+    <!-- 1. Bookings Management -->
+    <div id="bookingsSection" class="card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; flex-wrap: wrap; gap: 0.5rem;">
+        <div>
+          <h2 style="font-size: 1.3rem; color: var(--primary);">Booking Requests</h2>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">Approve or reject reservation requests</p>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <label for="statusFilter" class="form-label" style="margin: 0;">Filter:</label>
+          <select id="statusFilter" class="form-select" style="width: auto; padding: 0.4rem 0.75rem;">
+            <option value="PENDING">Pending Only</option>
+            <option value="">All Statuses</option>
+            <option value="APPROVED">Approved</option>
+            <option value="REJECTED">Rejected</option>
+            <option value="CANCELLED">Cancelled</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="data-table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>User ID</th>
+              <th>Role</th>
+              <th>Sport</th>
+              <th>Date</th>
+              <th>Time Slot</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="requestsTableBody">
+            <!-- Populated via JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 2. Users Table -->
+    <div id="usersSection" class="card" style="display: none;">
+      <h2 style="font-size: 1.3rem; color: var(--primary); margin-bottom: 0.3rem;">Registered University Users</h2>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.2rem;">Overview of registered students, lecturers and admins</p>
+
+      <div class="data-table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>User ID</th>
+              <th>Role</th>
+              <th>Faculty</th>
+            </tr>
+          </thead>
+          <tbody id="usersTableBody">
+            <!-- Populated via JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- Logout Confirmation Modal (OK / Cancel) -->
+  <div id="logoutModal" class="modal-overlay">
+    <div class="modal-content">
+      <h3 style="margin-bottom: 0.75rem; color: var(--text-main);">Confirm Admin Logout</h3>
+      <p style="color: var(--text-muted); font-size: 0.95rem;">Are you sure you want to end your administrative session?</p>
+      <div class="modal-actions">
+        <button id="cancelLogoutBtn" class="btn btn-outline">Cancel</button>
+        <button id="confirmLogoutBtn" class="btn btn-primary">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="js/admin.js"></script>
+</body>
+</html>
+
