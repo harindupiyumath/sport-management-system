@@ -118,6 +118,24 @@ Expected output:
 
 ---
 
+## 2b. Online Demo (Vercel frontend + backend in GitHub Codespaces)
+
+The live site **https://sport-management-system-frontend.vercel.app** calls the backend running in
+the GitHub Codespace `zany-fishstick-wv4p6p9wvw5qhwq9` (address set in `frontend/js/config.js`).
+
+**Before a demo:**
+1. Open https://github.com/codespaces and start the codespace (it stops after ~30 min of inactivity).
+2. Wait ~1–2 minutes; the backend starts automatically (log: `/tmp/backend.log` in the codespace).
+3. In the codespace **Ports** tab, make sure port **8080** is **Public**, or run from your PC:
+   `gh codespace ports visibility 8080:public -c zany-fishstick-wv4p6p9wvw5qhwq9`
+
+**Secrets** (`DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, `JWT_SECRET`) live in
+GitHub → Settings → Codespaces → Secrets — **never** in `devcontainer.json` or any committed file.
+If you delete the codespace and create a new one, update `PRODUCTION_API` in `frontend/js/config.js`
+with the new `https://<name>-8080.app.github.dev/api` address and push.
+
+---
+
 ## 3. Running Automated Tests
 
 A comprehensive test suite of 35 automated end-to-end tests is provided in `run_tests.ps1`:
