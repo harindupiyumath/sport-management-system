@@ -12,11 +12,12 @@
 
   // Secrets GitHub asks for when the codespace is created
   // (or set them once: GitHub -> Settings -> Codespaces -> Secrets).
+  // These are only LABELS shown to you - NEVER put the real values in this file (it is public).
   "secrets": {
     "DB_URL": { "description": "Neon JDBC URL, e.g. jdbc:postgresql://<host>:5432/neondb?sslmode=require" },
-    "DB_USERNAME": { "description": "neondb_owner" },
-    "DB_PASSWORD": { "description": "npg_Wt5vcblo1pOi" },
-    "JWT_SECRET": { "description": "E0CCE3DE7B09E0BE16484A3674D7643B3E96C93530C913EB3B71920F952C3BB9" }
+    "DB_USERNAME": { "description": "Neon database user" },
+    "DB_PASSWORD": { "description": "Neon database password" },
+    "JWT_SECRET": { "description": "Random 64-character hex string used to sign login tokens" }
   },
 
   "forwardPorts": [8080],
