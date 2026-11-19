@@ -129,6 +129,14 @@ if (loginForm) {
         localStorage.removeItem("remembered_username");
       }
 
+      // Default/admin-assigned password: user must choose their own first
+      if (data.mustChangePassword) {
+        sessionStorage.setItem("mustChangePassword", "true");
+        window.location.href = "change-password.html";
+        return;
+      }
+      sessionStorage.removeItem("mustChangePassword");
+
       // Role based redirect
       if (data.user.role === "ADMIN") {
         window.location.href = "admin-dashboard.html";

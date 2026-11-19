@@ -39,6 +39,16 @@ export async function api(path, method = "GET", body = null) {
   }
 
   const data = await res.json().catch(() => ({}));
+
+  // Logged in with a default/admin-assigned password: only changing it is allowed
+  if (res.status === 403 && data.passwordChangeRequired) {
+    sessionStorage.setItem("mustChangePassword", "true");
+    if (!window.location.pathname.endsWith("change-password.html")) {
+      window.location.href = "change-password.html";
+    }
+    throw new Error("You must change your password first.");
+  }
+
   if (!res.ok) {
     throw new Error(data.message || `Request failed with status ${res.status}`);
   }

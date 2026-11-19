@@ -33,9 +33,37 @@ foreach ($f in $frontendFiles) {
 try {
     $adminLogin = Invoke-RestMethod -Uri "http://localhost:8080/api/auth/login" -Method Post -Body (@{userId="admin"; password="Admin@123"} | ConvertTo-Json) -ContentType "application/json"
     $adminToken = $adminLogin.token
-    Record-Test "Authentication" "Super Admin Default Login" "200 OK & JWT with ADMIN role" "$($adminLogin.user.role)" ($adminLogin.user.role -eq "ADMIN" -and $adminToken) "Token received successfully"
+    Record-Test "Authentication" "Super Admin Default Login (must change password)" "200 OK, ADMIN role, mustChangePassword=true" "$($adminLogin.user.role) / mustChange=$($adminLogin.mustChangePassword)" ($adminLogin.user.role -eq "ADMIN" -and $adminToken -and $adminLogin.mustChangePassword -eq $true) "Default password forces a change"
 } catch {
-    Record-Test "Authentication" "Super Admin Default Login" "200 OK" "$($_.Exception.Message)" $false "$_"
+    Record-Test "Authentication" "Super Admin Default Login (must change password)" "200 OK" "$($_.Exception.Message)" $false "$_"
+}
+
+# Test 7b: Default-password admin token is blocked from admin endpoints
+try {
+    Invoke-RestMethod -Uri "http://localhost:8080/api/admin/users" -Method Get -Headers @{ Authorization="Bearer $adminToken" }
+    Record-Test "Admin Security" "Admin Blocked Until Password Changed" "403" "200 OK" $false "Default-password token accessed admin API"
+} catch {
+    $statusCode = $_.Exception.Response.StatusCode.value__
+    Record-Test "Admin Security" "Admin Blocked Until Password Changed" "403" "$statusCode" ($statusCode -eq 403) "Only change-password allowed"
+}
+
+# Test 7c: Forgot-password cannot reset the admin account
+try {
+    Invoke-RestMethod -Uri "http://localhost:8080/api/auth/forgot-password" -Method Post -Body (@{userId="admin"; newPassword="Hacked@1234"; confirmPassword="Hacked@1234"} | ConvertTo-Json) -ContentType "application/json"
+    Record-Test "Admin Security" "Forgot-Password Rejected for Admin" "400" "200 OK" $false "Admin password was reset without authentication"
+} catch {
+    $statusCode = $_.Exception.Response.StatusCode.value__
+    Record-Test "Admin Security" "Forgot-Password Rejected for Admin" "400" "$statusCode" ($statusCode -eq 400) "Admin reset refused"
+}
+
+# Test 7d: Admin changes the default password -> unrestricted token
+try {
+    $chg = Invoke-RestMethod -Uri "http://localhost:8080/api/users/me/password" -Method Put -Headers @{ Authorization="Bearer $adminToken" } -Body (@{currentPassword="Admin@123"; newPassword="AdminNew@456"; confirmPassword="AdminNew@456"} | ConvertTo-Json) -ContentType "application/json"
+    $adminToken = $chg.token
+    $users = Invoke-RestMethod -Uri "http://localhost:8080/api/admin/users" -Method Get -Headers @{ Authorization="Bearer $adminToken" }
+    Record-Test "Admin Security" "Admin Changes Default Password" "200 OK, admin API usable" "mustChange=$($chg.mustChangePassword), users=$(@($users).Count)" ($chg.mustChangePassword -eq $false -and @($users).Count -ge 1) "New token works"
+} catch {
+    Record-Test "Admin Security" "Admin Changes Default Password" "200 OK" "$($_.Exception.Message)" $false "$_"
 }
 
 # Test 8: Login with Invalid Password
@@ -357,6 +385,45 @@ try {
     Record-Test "Notification System" "Mark Notification as Read" "read=true" "read=$($updatedTarget.read)" ($updatedTarget.read -eq $true) "State updated"
 } catch {
     Record-Test "Notification System" "Mark Notification as Read" "200 OK" "$($_.Exception.Message)" $false "$_"
+}
+
+# ==========================================
+# 8. ADMIN ACCOUNT CREATION
+# ==========================================
+# Admin creates a new Admin account; new user must change password at first login
+try {
+    $created = Invoke-RestMethod -Uri "http://localhost:8080/api/admin/users" -Method Post -Headers @{ Authorization="Bearer $adminToken" } -Body (@{role="ADMIN"; userId="admin2"; faculty="TECHNOLOGY"; password="TempAdmin@123"; confirmPassword="TempAdmin@123"} | ConvertTo-Json) -ContentType "application/json"
+    $newLogin = Invoke-RestMethod -Uri "http://localhost:8080/api/auth/login" -Method Post -Body (@{userId="admin2"; password="TempAdmin@123"} | ConvertTo-Json) -ContentType "application/json"
+    Record-Test "Account Creation" "Admin Creates Admin Account (forced password change)" "201 + login role ADMIN, mustChange=true" "$($newLogin.user.role) / mustChange=$($newLogin.mustChangePassword)" ($newLogin.user.role -eq "ADMIN" -and $newLogin.mustChangePassword -eq $true) "$($created.message)"
+} catch {
+    Record-Test "Account Creation" "Admin Creates Admin Account (forced password change)" "201" "$($_.Exception.Message)" $false "$_"
+}
+
+# Admin creates a Lecturer account
+try {
+    Invoke-RestMethod -Uri "http://localhost:8080/api/admin/users" -Method Post -Headers @{ Authorization="Bearer $adminToken" } -Body (@{role="LECTURER"; userId="L099"; faculty="BUSINESS_STUDIES"; password="TempLect@123"; confirmPassword="TempLect@123"} | ConvertTo-Json) -ContentType "application/json" | Out-Null
+    $lLogin = Invoke-RestMethod -Uri "http://localhost:8080/api/auth/login" -Method Post -Body (@{userId="L099"; password="TempLect@123"} | ConvertTo-Json) -ContentType "application/json"
+    Record-Test "Account Creation" "Admin Creates Lecturer Account" "LECTURER, mustChange=true" "$($lLogin.user.role) / mustChange=$($lLogin.mustChangePassword)" ($lLogin.user.role -eq "LECTURER" -and $lLogin.mustChangePassword -eq $true) "Created"
+} catch {
+    Record-Test "Account Creation" "Admin Creates Lecturer Account" "201" "$($_.Exception.Message)" $false "$_"
+}
+
+# Students cannot create accounts via the admin endpoint
+try {
+    Invoke-RestMethod -Uri "http://localhost:8080/api/admin/users" -Method Post -Headers @{ Authorization="Bearer $studentToken" } -Body (@{role="ADMIN"; userId="evil1"; faculty="TECHNOLOGY"; password="Evil@12345"; confirmPassword="Evil@12345"} | ConvertTo-Json) -ContentType "application/json"
+    Record-Test "Account Creation" "Student Cannot Create Accounts" "403" "201" $false "Student created an account"
+} catch {
+    $statusCode = $_.Exception.Response.StatusCode.value__
+    Record-Test "Account Creation" "Student Cannot Create Accounts" "403" "$statusCode" ($statusCode -eq 403) "Blocked"
+}
+
+# Public sign-up cannot create Admin accounts
+try {
+    Invoke-RestMethod -Uri "http://localhost:8080/api/auth/signup" -Method Post -Body (@{role="ADMIN"; userId="evil2"; faculty="TECHNOLOGY"; password="Evil@12345"; confirmPassword="Evil@12345"} | ConvertTo-Json) -ContentType "application/json"
+    Record-Test "Account Creation" "Public Sign-up Rejects ADMIN Role" "400" "201" $false "Admin created via public sign-up"
+} catch {
+    $statusCode = $_.Exception.Response.StatusCode.value__
+    Record-Test "Account Creation" "Public Sign-up Rejects ADMIN Role" "400" "$statusCode" ($statusCode -eq 400) "Rejected"
 }
 
 # Output Summary

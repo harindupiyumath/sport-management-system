@@ -36,6 +36,15 @@ public class JwtFilter extends OncePerRequestFilter {
             String userId = jwtUtil.getUserIdFromToken(token);
             String role = jwtUtil.getRoleFromToken(token);
 
+            // A user who must change their password may only call the change-password endpoint
+            if (jwtUtil.isPasswordChangeRequired(token) && !isChangePasswordRequest(request)) {
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                response.setContentType("application/json");
+                response.getWriter().write(
+                        "{\"status\":403,\"message\":\"Password change required\",\"passwordChangeRequired\":true}");
+                return;
+            }
+
             if (userId != null && role != null) {
                 // In Spring Security, roles are prefixed with ROLE_
                 List<SimpleGrantedAuthority> authorities =
@@ -50,6 +59,11 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private boolean isChangePasswordRequest(HttpServletRequest request) {
+        return "PUT".equalsIgnoreCase(request.getMethod())
+                && "/api/users/me/password".equals(request.getRequestURI());
     }
 
     private String parseJwt(HttpServletRequest request) {

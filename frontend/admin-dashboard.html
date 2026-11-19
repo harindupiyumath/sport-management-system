@@ -16,6 +16,7 @@
 
     <div class="nav-controls">
       <span id="adminWelcome" style="font-size: 0.9rem; font-weight: 600; color: var(--text-muted);"></span>
+      <a href="change-password.html" class="btn btn-sm btn-outline">Change Password</a>
       <button id="logoutTrigger" class="btn btn-sm btn-outline">Logout</button>
     </div>
   </header>
@@ -24,6 +25,7 @@
     <div class="panel-tab" style="margin-bottom: 1.5rem;">
       <button id="tabBookings" class="tab-btn admin-tab-btn active">Pending & All Bookings</button>
       <button id="tabUsers" class="tab-btn admin-tab-btn">Registered Users</button>
+      <button id="tabCreate" class="tab-btn admin-tab-btn">Create Account</button>
     </div>
 
     <div id="adminAlert" class="alert" style="display: none;"></div>
@@ -86,6 +88,54 @@
           </tbody>
         </table>
       </div>
+    </div>
+
+    <!-- 3. Create Account -->
+    <div id="createSection" class="card" style="display: none; max-width: 560px;">
+      <h2 style="font-size: 1.3rem; color: var(--primary); margin-bottom: 0.3rem;">Create Account</h2>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.2rem;">
+        Create a Student, Lecturer or Admin account. Give the user this temporary password &mdash;
+        they must choose their own password the first time they log in.
+      </p>
+
+      <form id="createAccountForm" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="newRole">Role</label>
+          <select id="newRole" class="form-select" required>
+            <option value="STUDENT">Student</option>
+            <option value="LECTURER">Lecturer</option>
+            <option value="ADMIN">Admin</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="newUserId">User ID</label>
+          <input type="text" id="newUserId" class="form-control" placeholder="e.g. 242203 or L003" required>
+          <span class="form-hint">3&ndash;50 characters: letters, digits, '_' or '-'.</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="newFaculty">Faculty</label>
+          <select id="newFaculty" class="form-select" required>
+            <option value="TECHNOLOGY">Technology</option>
+            <option value="APPLIED_SCIENCES">Applied Sciences</option>
+            <option value="BUSINESS_STUDIES">Business Studies</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="newPassword">Temporary Password</label>
+          <input type="password" id="newPassword" class="form-control" placeholder="••••••••" required autocomplete="new-password">
+          <span class="form-hint">Minimum 8 characters including capital and simple letters, number and symbol.</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="newConfirmPassword">Confirm Temporary Password</label>
+          <input type="password" id="newConfirmPassword" class="form-control" placeholder="••••••••" required autocomplete="new-password">
+        </div>
+
+        <button type="submit" id="createAccountBtn" class="btn btn-primary">Create Account</button>
+      </form>
     </div>
   </main>
 

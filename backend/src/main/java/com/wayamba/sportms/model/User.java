@@ -22,7 +22,21 @@ public abstract class User {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    // True for the seeded default admin and for accounts created by an admin:
+    // the user must choose their own password before doing anything else.
+    // (Nullable so Hibernate can add the column to existing tables; null = false.)
+    @Column(name = "must_change_password")
+    private Boolean mustChangePassword = false;
+
     public User() {
+    }
+
+    public boolean isMustChangePassword() {
+        return Boolean.TRUE.equals(mustChangePassword);
+    }
+
+    public void setMustChangePassword(boolean mustChangePassword) {
+        this.mustChangePassword = mustChangePassword;
     }
 
     public User(String userId, String faculty, String passwordHash) {

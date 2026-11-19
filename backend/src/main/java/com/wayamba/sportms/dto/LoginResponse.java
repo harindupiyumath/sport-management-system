@@ -7,9 +7,25 @@ public class LoginResponse {
     public LoginResponse() {
     }
 
+    // True when the user must set a new password before using the app
+    private boolean mustChangePassword;
+
     public LoginResponse(String token, UserDto user) {
+        this(token, user, false);
+    }
+
+    public LoginResponse(String token, UserDto user, boolean mustChangePassword) {
         this.token = token;
         this.user = user;
+        this.mustChangePassword = mustChangePassword;
+    }
+
+    public boolean isMustChangePassword() {
+        return mustChangePassword;
+    }
+
+    public void setMustChangePassword(boolean mustChangePassword) {
+        this.mustChangePassword = mustChangePassword;
     }
 
     public String getToken() {

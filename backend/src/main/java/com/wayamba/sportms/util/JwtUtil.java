@@ -14,6 +14,8 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
+    private static final String PASSWORD_CHANGE_CLAIM = "pwc";
+
     private final SecretKey key;
     private final long expirationMs;
 
@@ -25,12 +27,21 @@ public class JwtUtil {
     }
 
     public String generateToken(String userId, String role) {
+        return generateToken(userId, role, false);
+    }
+
+    /**
+     * @param passwordChangeRequired if true, the token only allows changing the password
+     *                               (enforced in JwtFilter)
+     */
+    public String generateToken(String userId, String role, boolean passwordChangeRequired) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + expirationMs);
 
         return Jwts.builder()
                 .subject(userId)
                 .claim("role", role)
+                .claim(PASSWORD_CHANGE_CLAIM, passwordChangeRequired)
                 .issuedAt(now)
                 .expiration(expiryDate)
                 .signWith(key)
@@ -44,6 +55,10 @@ public class JwtUtil {
     public String getRoleFromToken(String token) {
         Object role = getClaims(token).get("role");
         return role != null ? role.toString() : null;
+    }
+
+    public boolean isPasswordChangeRequired(String token) {
+        return Boolean.TRUE.equals(getClaims(token).get(PASSWORD_CHANGE_CLAIM, Boolean.class));
     }
 
     public boolean validateToken(String token) {

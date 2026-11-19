@@ -13,6 +13,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @SpringBootApplication
 public class SportManagementApplication {
 
+    private static final String DEFAULT_ADMIN_PASSWORD = "Admin@123";
+
     public static void main(String[] args) {
         SpringApplication.run(SportManagementApplication.class, args);
     }
@@ -20,14 +22,26 @@ public class SportManagementApplication {
     @Bean
     CommandLineRunner seed(UserRepository users, FacilityRepository facilities, SportRepository sports, PasswordEncoder enc) {
         return args -> {
-            // Seed Super Admin if not exists
+            // Seed Super Admin if not exists. The default password is public (it's in the repo),
+            // so the admin must change it at first login before anything else is allowed.
             if (!users.existsById("admin")) {
                 Admin admin = new Admin();
                 admin.setUserId("admin");
                 admin.setFaculty("TECHNOLOGY");
-                admin.setPasswordHash(enc.encode("Admin@123"));
+                admin.setPasswordHash(enc.encode(DEFAULT_ADMIN_PASSWORD));
+                admin.setMustChangePassword(true);
                 users.save(admin);
-                System.out.println("Default Super Admin seeded: admin / Admin@123");
+                System.out.println("Default Super Admin seeded: admin / " + DEFAULT_ADMIN_PASSWORD
+                        + " (must be changed at first login)");
+            } else {
+                // Existing databases: if the admin still uses the public default, force a change.
+                users.findById("admin").ifPresent(admin -> {
+                    if (!admin.isMustChangePassword() && enc.matches(DEFAULT_ADMIN_PASSWORD, admin.getPasswordHash())) {
+                        admin.setMustChangePassword(true);
+                        users.save(admin);
+                        System.out.println("Admin still uses the default password - a change will be required at next login.");
+                    }
+                });
             }
 
             // Seed Facilities

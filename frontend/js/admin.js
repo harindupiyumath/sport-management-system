@@ -1,5 +1,6 @@
 import { api, escapeHtml } from "./api.js";
 import { setupLogout } from "./auth.js";
+import { isStrongPassword, passwordsMatch } from "./validators.js";
 
 // Route Guard for Admin
 const userStr = sessionStorage.getItem("user");
@@ -37,10 +38,11 @@ adminTabs.forEach(tab => {
 
     document.getElementById("bookingsSection").style.display = tab.id === "tabBookings" ? "block" : "none";
     document.getElementById("usersSection").style.display = tab.id === "tabUsers" ? "block" : "none";
+    document.getElementById("createSection").style.display = tab.id === "tabCreate" ? "block" : "none";
 
     if (tab.id === "tabUsers") {
       loadUsers();
-    } else {
+    } else if (tab.id === "tabBookings") {
       loadBookings();
     }
   });
@@ -144,6 +146,40 @@ async function loadUsers() {
     usersTableBody.innerHTML = `<tr><td colspan="3" style="color: var(--danger);">Failed to load users: ${err.message}</td></tr>`;
   }
 }
+
+// Create Account (admin creates Student / Lecturer / Admin accounts)
+const createForm = document.getElementById("createAccountForm");
+createForm?.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const role = document.getElementById("newRole").value;
+  const userId = document.getElementById("newUserId").value.trim();
+  const faculty = document.getElementById("newFaculty").value;
+  const password = document.getElementById("newPassword").value;
+  const confirmPassword = document.getElementById("newConfirmPassword").value;
+
+  if (!userId || !password || !confirmPassword) {
+    return showAlert("Please fill in all fields.", true);
+  }
+  if (!isStrongPassword(password)) {
+    return showAlert("Temporary password must have uppercase, lowercase, number, symbol & min 8 chars.", true);
+  }
+  if (!passwordsMatch(password, confirmPassword)) {
+    return showAlert("Passwords do not match.", true);
+  }
+
+  const btn = document.getElementById("createAccountBtn");
+  btn.disabled = true;
+  try {
+    const res = await api("/admin/users", "POST", { role, userId, faculty, password, confirmPassword });
+    showAlert(res.message || `Account '${userId}' created.`, false);
+    createForm.reset();
+  } catch (err) {
+    showAlert(err.message, true);
+  } finally {
+    btn.disabled = false;
+  }
+});
 
 function showAlert(message, isError) {
   if (!adminAlert) return;
