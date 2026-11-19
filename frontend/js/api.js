@@ -14,7 +14,16 @@ export async function api(path, method = "GET", body = null) {
     options.body = JSON.stringify(body);
   }
 
-  const res = await fetch(API_BASE_URL + path, options);
+  let res;
+  try {
+    res = await fetch(API_BASE_URL + path, options);
+  } catch {
+    // Network-level failure (server down, sleeping, unreachable, or blocked by CORS).
+    // The browser's own message here is just "Failed to fetch".
+    throw new Error(
+      "Cannot reach the server. If the site was idle, the server may be waking up - please try again in a minute."
+    );
+  }
 
   if (res.status === 204) {
     return null;
