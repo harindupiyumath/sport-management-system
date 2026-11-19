@@ -1,0 +1,29 @@
+// GitHub Codespaces: runs the Spring Boot backend in the cloud for demos.
+// The backend starts automatically and is served on port 8080.
+// Database / JWT settings come from Codespaces secrets (never from the repo).
+{
+  "name": "Sport Management System backend",
+  "image": "mcr.microsoft.com/devcontainers/java:17",
+
+  // Secrets GitHub asks for when the codespace is created
+  // (or set them once: GitHub -> Settings -> Codespaces -> Secrets).
+  "secrets": {
+    "DB_URL": { "description": "Neon JDBC URL, e.g. jdbc:postgresql://<host>:5432/neondb?sslmode=require" },
+    "DB_USERNAME": { "description": "Neon database user" },
+    "DB_PASSWORD": { "description": "Neon database password" },
+    "JWT_SECRET": { "description": "Random 64-character hex string used to sign login tokens" }
+  },
+
+  "forwardPorts": [8080],
+  "portsAttributes": {
+    "8080": { "label": "Backend API", "onAutoForward": "silent" }
+  },
+
+  // Start the backend every time the codespace starts (log: /tmp/backend.log)
+  "postStartCommand": "nohup bash .devcontainer/start-backend.sh > /tmp/backend.log 2>&1 &",
+
+  "customizations": {
+    "codespaces": { "openFiles": ["RUN_INSTRUCTIONS.md"] },
+    "vscode": { "extensions": ["vscjava.vscode-java-pack"] }
+  }
+}
