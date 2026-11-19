@@ -93,12 +93,16 @@ cd C:\Users\Dinath\Desktop\SportManagementProject\backend
 ---
 
 ### Step 5: Start Frontend HTTP Server (Terminal 3)
-From the project root, launch the lightweight Python HTTP server on port 5500:
+From the project root (requires Node.js):
 ```powershell
-cd C:\Users\Dinath\Desktop\SportManagementProject
-py -m http.server 5500 -d frontend
+.\start-frontend.ps1
 ```
-*(Alternatively: open the `frontend/` directory in VS Code and click **"Open with Live Server"** on port 5500).*
+Then open **http://localhost:5500/login.html**.
+*(Alternatively: VS Code **"Open with Live Server"** — any `localhost` port is accepted by the backend.)*
+
+> Do **not** open the HTML files directly (double-click / `file:///...`): the browser then blocks
+> requests to the backend and login shows **"Failed to fetch"**. The same message appears when the
+> backend (`.\start-backend.ps1`) is not running.
 
 ---
 
