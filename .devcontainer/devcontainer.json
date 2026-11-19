@@ -5,6 +5,11 @@
   "name": "Sport Management System backend",
   "image": "mcr.microsoft.com/devcontainers/java:17",
 
+  // SSH server so `gh codespace ssh` / `gh codespace logs` work from your own PC
+  "features": {
+    "ghcr.io/devcontainers/features/sshd:1": { "version": "latest" }
+  },
+
   // Secrets GitHub asks for when the codespace is created
   // (or set them once: GitHub -> Settings -> Codespaces -> Secrets).
   "secrets": {
@@ -19,8 +24,9 @@
     "8080": { "label": "Backend API", "onAutoForward": "silent" }
   },
 
-  // Start the backend every time the codespace starts (log: /tmp/backend.log)
-  "postStartCommand": "nohup bash .devcontainer/start-backend.sh > /tmp/backend.log 2>&1 &",
+  // Start the backend every time the codespace starts (log: /tmp/backend.log).
+  // setsid fully detaches it; a plain `&` gets killed when this step finishes.
+  "postStartCommand": "setsid nohup bash .devcontainer/start-backend.sh > /tmp/backend.log 2>&1 < /dev/null & sleep 2",
 
   "customizations": {
     "codespaces": { "openFiles": ["RUN_INSTRUCTIONS.md"] },
