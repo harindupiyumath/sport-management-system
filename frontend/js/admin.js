@@ -23,6 +23,7 @@ if (adminWelcome) adminWelcome.textContent = `Super Admin: ${currentUser.userId}
 
 const requestsTableBody = document.getElementById("requestsTableBody");
 const usersTableBody = document.getElementById("usersTableBody");
+const sportsTableBody = document.getElementById("sportsTableBody");
 const adminAlert = document.getElementById("adminAlert");
 const statusFilter = document.getElementById("statusFilter");
 
@@ -37,11 +38,14 @@ adminTabs.forEach(tab => {
     tab.classList.add("active");
 
     document.getElementById("bookingsSection").style.display = tab.id === "tabBookings" ? "block" : "none";
+    document.getElementById("sportsSection").style.display = tab.id === "tabSports" ? "block" : "none";
     document.getElementById("usersSection").style.display = tab.id === "tabUsers" ? "block" : "none";
     document.getElementById("createSection").style.display = tab.id === "tabCreate" ? "block" : "none";
 
     if (tab.id === "tabUsers") {
       loadUsers();
+    } else if (tab.id === "tabSports") {
+      loadSports();
     } else if (tab.id === "tabBookings") {
       loadBookings();
     }
@@ -146,6 +150,81 @@ async function loadUsers() {
     usersTableBody.innerHTML = `<tr><td colspan="3" style="color: var(--danger);">Failed to load users: ${err.message}</td></tr>`;
   }
 }
+
+async function loadSports() {
+  try {
+    sportsTableBody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">Loading sports...</td></tr>`;
+    const sports = await api("/admin/sports");
+
+    if (!sports || sports.length === 0) {
+      sportsTableBody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">No sports configured.</td></tr>`;
+      return;
+    }
+
+    sportsTableBody.innerHTML = sports.map(sport => `
+      <tr>
+        <td><strong>${escapeHtml(sport.name)}</strong></td>
+        <td>${escapeHtml(sport.facility)} (${escapeHtml(sport.type)})</td>
+        <td><span class="badge ${sport.active ? 'badge-approved' : 'badge-cancelled'}">${sport.active ? "Active" : "Removed"}</span></td>
+        <td>
+          ${sport.active
+            ? `<button class="btn btn-sm btn-danger remove-sport-btn" data-id="${sport.id}">Remove</button>`
+            : `<button class="btn btn-sm btn-outline restore-sport-btn" data-id="${sport.id}">Restore</button>`}
+        </td>
+      </tr>
+    `).join("");
+
+    sportsTableBody.querySelectorAll(".remove-sport-btn").forEach(button => {
+      button.addEventListener("click", async () => {
+        const id = button.getAttribute("data-id");
+        if (!confirm("Remove this sport from new bookings? Existing booking history will be preserved.")) return;
+        try {
+          await api(`/admin/sports/${id}`, "DELETE");
+          showAlert("Sport removed from new bookings.", false);
+          loadSports();
+        } catch (err) {
+          showAlert(err.message, true);
+        }
+      });
+    });
+
+    sportsTableBody.querySelectorAll(".restore-sport-btn").forEach(button => {
+      button.addEventListener("click", async () => {
+        const id = button.getAttribute("data-id");
+        try {
+          await api(`/admin/sports/${id}/restore`, "PUT");
+          showAlert("Sport restored for new bookings.", false);
+          loadSports();
+        } catch (err) {
+          showAlert(err.message, true);
+        }
+      });
+    });
+  } catch (err) {
+    sportsTableBody.innerHTML = `<tr><td colspan="4" style="color: var(--danger);">Failed to load sports: ${escapeHtml(err.message)}</td></tr>`;
+  }
+}
+
+const addSportForm = document.getElementById("addSportForm");
+addSportForm?.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const name = document.getElementById("sportName").value.trim();
+  const type = document.getElementById("sportType").value;
+  const button = document.getElementById("addSportBtn");
+  if (!name) return showAlert("Enter a sport name.", true);
+
+  button.disabled = true;
+  try {
+    await api("/admin/sports", "POST", { name, type });
+    showAlert(`Added ${name} to the sports list.`, false);
+    addSportForm.reset();
+    loadSports();
+  } catch (err) {
+    showAlert(err.message, true);
+  } finally {
+    button.disabled = false;
+  }
+});
 
 // Create Account (admin creates Student / Lecturer / Admin accounts)
 const createForm = document.getElementById("createAccountForm");

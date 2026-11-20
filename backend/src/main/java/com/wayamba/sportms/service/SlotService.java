@@ -29,9 +29,8 @@ public class SlotService {
     }
 
     public SportSlotsResponse getSlotsForSportAndDate(Long sportId, LocalDate date) {
-        if (sportId == null || !sportRepository.existsById(sportId)) {
-            throw new ResourceNotFoundException("Sport not found with id " + sportId);
-        }
+        sportRepository.findByIdAndActiveTrue(sportId)
+                .orElseThrow(() -> new ResourceNotFoundException("Sport not found with id " + sportId));
 
         List<Booking> bookings = bookingRepository.findBySport_IdAndBookingDate(sportId, date);
 

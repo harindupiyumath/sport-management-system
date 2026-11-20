@@ -6,8 +6,8 @@ Everything needed to create, configure and run the backend of the Sport Manageme
 
 ## 1. Prerequisites
 
-- JDK 17+
-- Maven 3.8+ (or use the Maven wrapper `mvnw`)
+- JDK 25
+- Maven 3.9+ (or use the Maven wrapper `mvnw`)
 - MySQL 8 (+ MySQL Workbench or phpMyAdmin)
 - IDE: IntelliJ IDEA / VS Code with Java extensions
 - Postman (to test the API)
@@ -26,7 +26,7 @@ Go to **https://start.spring.io** and choose:
 | Group | `com.wayamba` |
 | Artifact | `sportms` |
 | Packaging | Jar |
-| Java | 17 |
+| Java | 25 |
 
 Dependencies: **Spring Web, Spring Data JPA, MySQL Driver, Spring Security, Validation, Lombok (optional)**.
 

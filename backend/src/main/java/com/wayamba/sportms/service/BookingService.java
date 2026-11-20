@@ -43,7 +43,7 @@ public class BookingService {
         User user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found: " + userId));
 
-        Sport sport = sportRepository.findById(req.getSportId())
+        Sport sport = sportRepository.findByIdAndActiveTrue(req.getSportId())
                 .orElseThrow(() -> new ResourceNotFoundException("Sport not found with id: " + req.getSportId()));
 
         LocalDate bookingDate;

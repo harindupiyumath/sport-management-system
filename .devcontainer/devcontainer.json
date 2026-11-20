@@ -3,7 +3,7 @@
 // Database / JWT settings come from Codespaces secrets (never from the repo).
 {
   "name": "Sport Management System backend",
-  "image": "mcr.microsoft.com/devcontainers/java:17",
+  "image": "mcr.microsoft.com/devcontainers/java:25",
 
   // SSH server so `gh codespace ssh` / `gh codespace logs` work from your own PC
   "features": {

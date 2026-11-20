@@ -13,6 +13,9 @@ public class Sport {
     @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false, columnDefinition = "boolean default true")
+    private boolean active = true;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "facility_id", nullable = false)
     private SportsFacility facility;
@@ -39,6 +42,14 @@ public class Sport {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     public SportsFacility getFacility() {

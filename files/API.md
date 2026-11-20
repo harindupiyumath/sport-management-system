@@ -161,6 +161,22 @@ Error 409 if the slot already has an approved booking.
 ### PUT `/admin/bookings/{id}/reject`
 `200 { "message": "Booking rejected" }` – sends a notification to the user.
 
+### GET `/admin/sports`
+Returns all sports, including removed entries, with their facility and active status.
+
+### POST `/admin/sports`
+Adds an indoor or outdoor sport:
+```json
+{ "name": "Rugby", "type": "OUTDOOR" }
+```
+Errors: 400 (invalid name or type), 409 (a sport with that name already exists or was removed).
+
+### DELETE `/admin/sports/{id}`
+Removes the sport from new bookings while retaining existing booking history. `204 No Content`.
+
+### PUT `/admin/sports/{id}/restore`
+Restores a removed sport for new bookings.
+
 ### GET `/admin/users`
 ```json
 [
@@ -189,6 +205,10 @@ Error 409 if the slot already has an approved booking.
 | GET | `/admin/bookings?status=` | Admin | admin.js |
 | PUT | `/admin/bookings/{id}/approve` | Admin | admin.js |
 | PUT | `/admin/bookings/{id}/reject` | Admin | admin.js |
+| GET | `/admin/sports` | Admin | admin.js |
+| POST | `/admin/sports` | Admin | admin.js |
+| DELETE | `/admin/sports/{id}` | Admin | admin.js |
+| PUT | `/admin/sports/{id}/restore` | Admin | admin.js |
 | GET | `/admin/users` | Admin | admin.js |
 
 ---

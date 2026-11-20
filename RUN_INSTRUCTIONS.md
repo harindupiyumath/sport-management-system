@@ -16,6 +16,8 @@ This guide details all prerequisites, commands, database management steps, and t
 
 ## 2. Step-by-Step Run Instructions
 
+The backend targets Java 25 LTS. The included Maven wrapper provides Maven 3.9.9. Ensure `JAVA_HOME` points to a JDK 25 installation before running Maven; `start-backend.ps1` sets it to `C:\Program Files\Apache NetBeans\jdk` only when that directory exists and `JAVA_HOME` is unset.
+
 ### Step 1: Make Sure PostgreSQL Is Running
 PostgreSQL runs as a Windows service and normally starts automatically:
 ```powershell

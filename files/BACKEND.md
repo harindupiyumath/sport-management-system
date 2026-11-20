@@ -9,7 +9,7 @@ Spring Boot setup details are in `SPRINGBOOT.md`. Endpoints are in `API.md`.
 
 | Item | Choice |
 |---|---|
-| Language | Java 17 |
+| Language | Java 25 |
 | Framework | Spring Boot 3.x (Web, Data JPA, Security, Validation) |
 | Database | MySQL |
 | Auth | JWT (stateless) + BCrypt password hashing |
